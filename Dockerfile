@@ -1,5 +1,17 @@
-# Base image with Node.js 20 & Debian
+# Multi-stage Docker build
+
+# ── Stage 1: Build the React Client ──
+FROM node:20-bookworm-slim AS client-builder
+WORKDIR /app/client
+COPY client/package*.json ./
+# Install ALL dependencies (including vite & devDependencies)
+RUN npm install
+COPY client/ ./
+RUN npm run build
+
+# ── Stage 2: Production Server with Chrome & XVFB ──
 FROM node:20-bookworm-slim
+WORKDIR /app
 
 # Install Google Chrome stable & necessary dependencies for headless automation / Xvfb
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -22,30 +34,23 @@ ENV NODE_ENV=production \
     GOOGLE_CHROME_EXECUTABLE_PATH=/usr/bin/google-chrome \
     HEADLESS=false \
     DISPLAY=:99 \
-    SERVER_PORT=3001
+    PORT=10000
 
-WORKDIR /app
-
-# Copy dependency manifests
+# Copy root package manifests and install production backend dependencies
 COPY package*.json ./
-COPY client/package*.json ./client/
-
-# Install root & client packages
 RUN npm install --omit=dev
-RUN cd client && npm install
 
 # Copy application source code
 COPY . .
 
-# Build React client bundle
-RUN npm run build:client
+# Copy pre-built React static files from builder stage
+COPY --from=client-builder /app/client/dist ./client/dist
 
-# Create directories for persistent storage / volume mount
+# Create directory for persistent user data
 RUN mkdir -p /app/UserData
 
-# Expose server port
-EXPOSE 3001
+# Expose Render standard port
+EXPOSE 10000
 
 # Start virtual display (Xvfb) and Node application server
 CMD ["sh", "-c", "Xvfb :99 -screen 0 1920x1080x24 -ac & npm run app"]
-

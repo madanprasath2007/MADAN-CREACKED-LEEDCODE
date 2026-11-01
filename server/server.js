@@ -16,7 +16,7 @@ const ROOT = path.resolve(__dirname, '..');
 
 dotenv.config({ path: path.join(ROOT, '.env') });
 
-const PORT = process.env.SERVER_PORT || 3001;
+const PORT = process.env.PORT || process.env.SERVER_PORT || 3001;
 
 // ─── Express Setup ────────────────────────────────────────────────────────────
 const app = express();
