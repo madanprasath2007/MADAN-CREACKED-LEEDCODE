@@ -12,15 +12,25 @@ class LeetcoderLogin {
       Logger.success('  1. Log in to LeetCode.');
       Logger.success('  2. Once logged in, close the Chrome window to continue.');
 
+      const chromeArgs = [
+        `--user-data-dir=${profileDir}`,
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--no-first-run',
+        '--no-default-browser-check',
+        '--start-maximized',
+        'https://leetcode.com/accounts/login/',
+      ];
+
+      if (process.env.HEADLESS === 'true') {
+        chromeArgs.push('--headless=new');
+      }
+
       const chrome = spawn(
         GOOGLE_CHROME_EXECUTABLE_PATH,
-        [
-          `--user-data-dir=${profileDir}`,
-          '--no-first-run',
-          '--no-default-browser-check',
-          '--start-maximized',
-          'https://leetcode.com/accounts/login/',
-        ],
+        chromeArgs,
         {stdio: 'ignore'}
       );
 

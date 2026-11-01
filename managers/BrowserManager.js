@@ -10,7 +10,10 @@ class BrowserManager {
     if (!BrowserManager.browser) {
       const resolvedProfilePath = path.resolve(CHROME_PROFILE_PATH);
 
-      const isHeadless = process.env.HEADLESS === 'true';
+      // On Linux/Render, use headless: 'new' unless DISPLAY is active or HEADLESS is explicitly false
+      const isLinux = process.platform === 'linux';
+      const hasDisplay = Boolean(process.env.DISPLAY);
+      const isHeadless = process.env.HEADLESS === 'true' || (isLinux && !hasDisplay);
 
       BrowserManager.browser = await puppeteer.launch({
         headless: isHeadless ? 'new' : false,
@@ -22,6 +25,8 @@ class BrowserManager {
           "--no-sandbox",
           "--disable-setuid-sandbox",
           "--disable-dev-shm-usage",
+          "--disable-gpu",
+          "--no-zygote",
           "--disable-blink-features=AutomationControlled",
           "--no-default-browser-check"
         ],
