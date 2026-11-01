@@ -1,151 +1,162 @@
-
 <p align="center">
-  <img src="https://img.shields.io/github/stars/chanpreet3000/Leetcoder?style=for-the-badge&logo=github&color=gold" alt="GitHub stars" />
-  <img src="https://img.shields.io/github/forks/chanpreet3000/Leetcoder?style=for-the-badge&logo=github" alt="GitHub forks" />
-  <img src="https://img.shields.io/github/issues/chanpreet3000/Leetcoder?style=for-the-badge&logo=github" alt="GitHub issues" />
+  <img src="https://img.shields.io/github/stars/madanprasath2007/MADAN-CREACKED-LEEDCODE?style=for-the-badge&logo=github&color=gold" alt="GitHub stars" />
+  <img src="https://img.shields.io/github/forks/madanprasath2007/MADAN-CREACKED-LEEDCODE?style=for-the-badge&logo=github&color=orange" alt="GitHub forks" />
+  <img src="https://img.shields.io/github/issues/madanprasath2007/MADAN-CREACKED-LEEDCODE?style=for-the-badge&logo=github" alt="GitHub issues" />
 </p>
 
-<h1 align="center">Leetcoder</h1>
+<h1 align="center">⚡ MADAN-CRACKED-LEETCODE ⚡</h1>
 
-<h2 align="center">Last verified working on 15 July 2026</h2>
+<h2 align="center">Ultimate Automated LeetCode Solver, Scraper & Dashboard Suite</h2>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/maintenance-active-success?style=for-the-badge" alt="Actively maintained" />
-  <img src="https://img.shields.io/github/last-commit/chanpreet3000/Leetcoder?style=for-the-badge&logo=git" alt="Last commit" />
+  <img src="https://img.shields.io/badge/version-2.0.0--cracked-success?style=for-the-badge&logo=rocket" alt="Version 2.0.0" />
+  <img src="https://img.shields.io/github/last-commit/madanprasath2007/MADAN-CREACKED-LEEDCODE?style=for-the-badge&logo=git" alt="Last commit" />
+  <img src="https://img.shields.io/badge/maintainer-Madan_Prasath-blue?style=for-the-badge&logo=github" alt="Maintainer Madan Prasath" />
+  <img src="https://img.shields.io/badge/docker-ready-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Ready" />
 </p>
 
 <p align="center">
-  Automate login, solving, and scraping on LeetCode so you can focus on learning — not busywork.
+  <b>Automate solving, scraping, and tracking on LeetCode with an interactive Web Dashboard & Android PWA support.</b><br>
+  Solve hundreds of problems effortlessly with Java online auto-fetch and live streaming logs.
 </p>
 
 ---
 
-## This project is maintained
+## 🔥 What's New in this Version
 
-Leetcoder is **actively maintained**. If something breaks after a LeetCode UI change, or you hit a rough edge on Windows, **speak up** — that helps everyone.
-
-- **Bug or regression?** Open a [GitHub issue](https://github.com/chanpreet3000/Leetcoder/issues) with steps to reproduce and your environment (Windows version, Chrome path, what you expected vs. what happened).
-- **Feature idea or question?** Open an [issue](https://github.com/chanpreet3000/Leetcoder/issues) — questions are welcome too.
-- **Want to reach out directly?** Message me on GitHub ([@chanpreet3000](https://github.com/chanpreet3000)) or use the contact options on my profile.
-
-Stars and PRs are welcome. Even a short issue with a screenshot often saves hours for the next person.
+- 🖥️ **Full Web Dashboard (React + Express)**: Control the bot, view real-time WebSocket console logs, search solutions, and configure `.env` directly from your browser.
+- 🚀 **Java Online Solution Fetcher**: Automatically downloads verified solutions from open-source repositories when missing locally.
+- 🎯 **Mode 4 (Custom Problem Targets)**: Run specific numbers (`1`), slugs (`two-sum`), ranges (`1-50`), or text files.
+- 📅 **Mode 3 (Daily Challenge)**: Automatically queries LeetCode's GraphQL API for today's active question.
+- 🐳 **Cloud & Docker Ready**: Headless Chrome with XVFB display server support for 1-click cloud deployment on Render, Railway, or VPS.
+- 📱 **Android PWA & APK Support**: Packaged with Web Manifest and Service Worker for mobile installation and Play Store packaging.
 
 ---
 
-## Important notes
+## ⚡ Features
 
-1. Works on **LeetCode's newer dynamic layout** only.
-2. **Windows only** for now. PRs that add solid macOS support are very welcome.
-3. **Use responsibly** and in line with LeetCode's terms.
-4. **Privacy:** no data is sent anywhere outside your machine by this tool (see your own Chrome/network setup as usual).
+1. ### 🤖 Automated Problem Solving
+   Solves LeetCode questions seamlessly with built-in Monaco editor code injection, fallback clipboard typing, and verdict polling.
 
-> **Verified working:** **15 July 2026** — if you're reading this months later, check the "Last commit" badge above; regular commits usually mean the layout selectors are still being kept in sync.
+2. ### 🌐 Interactive Web GUI Dashboard
+   Full LeetCode dark-themed dashboard with live WebSocket log streaming, start/stop controls, and statistics.
 
-Leetcoder is built to make problem-solving and scraping more efficient. With its automated flow, **Leetcoder can solve on the order of ~200 problems in about an hour** (network and UI permitting).
+3. ### ☕ Auto-Fetch Java Solutions
+   When `PREFERRED_LANGUAGE=java` is set, the bot automatically retrieves verified solutions from the community archive and caches them locally.
 
-## Features
+4. ### 📥 Solution Scraper (GraphQL)
+   Scrapes your accepted submissions via LeetCode's GraphQL API, saving problem names, code, and language metadata locally.
 
-1. ### Automated problem solving
-   Automates solving LeetCode questions from your saved solutions, in any language LeetCode supports (C++, Java, Python, Go, Rust, and more).
+5. ### 🎯 Target Specific Problems & Ranges
+   Queue exact problem IDs (e.g. `1, 15, 33`), slugs, or ranges like `1-20`.
 
-2. ### Seamless login
-   Handles authentication via a persistent Chrome profile.
+6. ### 🔁 Auto-Resume
+   Tracks previously solved questions in `SolvedProblems.json` so you never solve the same problem twice.
 
-3. ### Solution scraping
-   Scrapes and organizes accepted solutions into a local archive using the LeetCode GraphQL API.
+---
 
-4. ### Resume where you left off
-   Remembers solved problem names so runs can continue after interruption.
+## 🚀 Getting Started
 
-5. ### Solve specific problems (Mode 4)
-   Target individual problems by number (`1`), slug (`two-sum`), comma-separated list (`1, 3, 5`), numeric range (`1-10`), or a file path containing problem identifiers — one per line.
+### 1. Clone the Repository
+```bash
+git clone https://github.com/madanprasath2007/MADAN-CREACKED-LEEDCODE.git
+cd MADAN-CREACKED-LEEDCODE
+```
 
-6. ### Java auto-fetch (online fallback)
-   When `PREFERRED_LANGUAGE=java` is set and no local solution exists, Leetcoder automatically fetches a verified Java solution from the [doocs/leetcode](https://github.com/doocs/leetcode) open-source repository and caches it locally for future runs.
+### 2. Install Dependencies
+```bash
+npm install
+cd client && npm install && cd ..
+```
 
-## Usage disclaimer
+### 3. Create your `.env` Configuration
+Copy `.env.example` to `.env`:
+```env
+# Profile folder identifier
+USER_EMAIL=my_leetcode_profile
 
-Leetcoder is for **educational use**. Do not use it to misrepresent your progress or break LeetCode's rules. Always follow [LeetCode's terms of service](https://leetcode.com/terms/) and community guidelines.
+# Submission language (java, cpp, python3, javascript, etc.)
+PREFERRED_LANGUAGE=java
 
-## Getting started
+# Path to your Google Chrome executable (Windows example):
+GOOGLE_CHROME_EXECUTABLE_PATH=C:/Program Files/Google/Chrome/Application/chrome.exe
+```
 
-1. Clone the repo.
-   ```bash
-   git clone https://github.com/chanpreet3000/Leetcoder
-   ```
-2. Open the project in your editor.
-3. In the terminal: `yarn install`
-4. Create a `.env` in the project root (copy `.env.example` as a starting point):
-   ```text
-   # Used only for the local Chrome profile folder name.
-   USER_EMAIL=your_email_here
-   # Chrome -> chrome://version/ -> Executable Path
-   GOOGLE_CHROME_EXECUTABLE_PATH=C:/Program Files/Google/Chrome/Application/chrome.exe
-   # Optional: preferred submission language. Defaults to java.
-   # Set to cpp, python3, javascript, etc. to use a different language.
-   PREFERRED_LANGUAGE=java
-   ```
-5. **Choose how to run:**
+---
 
-   #### Option A: Modern Web Application (Recommended)
-   ```bash
-   npm run app
-   ```
-   Open [http://localhost:3001](http://localhost:3001) in your browser for the full interactive GUI dashboard:
-   - Live real-time WebSocket log streaming
-   - Start / Stop bot execution across all modes (L, 1, 2, 3, 4)
-   - Mode 4 custom input support (ranges, problem numbers, slugs)
-   - Solved problems counter & progress tracking
-   - Local and scraped solutions browser with code preview
-   - In-app `.env` settings manager
+## 🎮 How to Run
 
-   #### Option B: Terminal CLI
-   ```bash
-   npm start
-   ```
-   ```text
-   [L] Login to LeetCode        <- run this first (or when session expires)
-   [1] Start Leetcode Bot       <- solve all queued problems
-   [2] Scrape Solved Problems   <- back up your accepted submissions
-   [3] Solve Daily Challenge    <- solve today's LeetCode daily
-   [4] Solve Specific Problem(s)<- target by number, slug, range, or file
-   ```
+### 🌟 Option A: Modern Web Dashboard (Recommended)
+```bash
+npm run app
+```
+Open **[http://localhost:3001](http://localhost:3001)** in your browser:
+- Real-time live log stream
+- 1-Click Start/Stop bot controls
+- Mode 4 custom range input
+- Progress tracker across 2,500+ problems
+- Solution viewer & settings editor
 
-### First run: log in
+---
 
-Pick **`L`** on the first run. A Chrome window opens on the LeetCode login page — log in, then **close the window**. Your session is saved to the local Chrome profile, so run `npm start` again and pick `1`, `2`, `3`, or `4` to start.
+### 💻 Option B: Terminal CLI Mode
+```bash
+npm start
+```
+Select a mode when prompted:
+```text
+[L] Login to LeetCode        <- Run first to save session to local Chrome profile
+[1] Start Leetcode Bot       <- Solves all queued problems in ./problems/
+[2] Scrape Solved Problems   <- Backs up your accepted LeetCode solutions
+[3] Solve Daily Challenge    <- Automatically solves today's challenge
+[4] Solve Specific Problems  <- Target by number (1), slug, range (1-10), or file
+```
 
-> Log in again with `L` whenever your session expires. The login window and the bot can't run at the same time, so it's a separate step.
+---
 
-### Mode 4 — Solve Specific Problems
+## 📱 Mobile App / APK (100% Free)
 
-Examples of accepted input:
+You can run this application on your Android phone as a native app:
 
-| Input | Meaning |
-|-------|---------|
-| `1` | Problem #1 (Two Sum) |
-| `two-sum` | Problem by slug |
-| `1, 3, 5` | Problems 1, 3, and 5 |
-| `1-10` | Problems 1 through 10 |
-| `problems.txt` | File with one identifier per line |
+1. **Direct Chrome Install**: Open the deployed web app on your phone's Chrome browser → tap **(⋮)** → tap **"Install App"**.
+2. **Compile Free APK**: Follow the step-by-step instructions in [FREE_APK_GUIDE.md](FREE_APK_GUIDE.md) using PWABuilder or the included GitHub Actions workflow.
 
-### Where data lives
+---
 
-| Kind | Path |
-|------|------|
-| Scraped solutions | `./UserData/your_email/LeetcoderData/ScrapedSolutions` |
-| Cached Java solutions | `./UserData/your_email/LeetcoderData/JavaSolutions` |
-| Solved problem list (resume) | `./UserData/your_email/LeetcoderData/SolvedProblems.json` |
-| Chrome profile (stay logged in) | `./UserData/your_email/ProfileData` |
+## 📁 Project Structure
 
-## Compatibility
+```
+MADAN-CREACKED-LEEDCODE/
+├── server/                  # Express + WebSocket HTTP backend
+│   ├── server.js            # App server & WS broadcast
+│   ├── BotRunner.js         # Process manager & log streamer
+│   └── routes/              # Stats, solutions, and settings APIs
+├── client/                  # React 18 + Vite frontend
+│   ├── src/                 # Dashboard components (LeetCode dark theme)
+│   └── public/              # PWA manifest, service worker & icons
+├── leetcoder/               # Core bot engines (Solver, Scraper, Authenticator)
+├── managers/                # BrowserManager (Puppeteer) & FileManager
+├── problems/                # 2,500+ local problem archives
+├── Dockerfile               # Production Docker container with Chrome & XVFB
+└── .github/workflows/       # Automated APK compilation workflow
+```
 
-Leetcoder targets **Windows**. Behavior on macOS is not supported today — contributions to fix that are welcome.
+---
 
-## Contributing
+## ⚖️ Disclaimer
 
-Issues and pull requests are welcome on [GitHub](https://github.com/chanpreet3000/Leetcoder). See **This project is maintained** above if you're unsure how to report something.
+This software is developed strictly for **educational and learning purposes**. Please use responsibly and adhere to [LeetCode's Terms of Service](https://leetcode.com/terms/).
 
-## License
+---
 
-Open source under the [MIT License](LICENSE). Free to use and modify for fun or learning; no warranty. If you build on it, a star or mention is appreciated but not required.
+## 👤 Author & Maintainer
+
+**Madan Prasath**
+- GitHub: [@madanprasath2007](https://github.com/madanprasath2007)
+- Repository: [MADAN-CREACKED-LEEDCODE](https://github.com/madanprasath2007/MADAN-CREACKED-LEEDCODE)
+
+---
+
+## 📄 License
+
+This project is open-source under the [MIT License](LICENSE).
