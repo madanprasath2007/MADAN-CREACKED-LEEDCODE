@@ -5,19 +5,45 @@ export const SCRAPER_SUBMITTED_CODE_LANGUAGE_XPATH =
 export const SCRAPER_SUBMITTED_CODE_DIV_XPATH =
   "/html/body/div[2]/div/div[1]/div/div[2]/div[7]/div/div[3]/div/div/div[3]/div/div[3]";
 
-// Questions Solver XPath
-export const QUESTIONS_CODE_DIV_XPATH =
-  "/html/body/div[1]/div[2]/div/div/div[4]/div/div/div[8]/div/div[2]/div[1]/div/div[1]/div[1]/textarea";
-export const QUESTIONS_SUBMIT_DIV_XPATH =
-  "/html/body/div[1]/div[2]/div/div/div[3]/nav/div[2]/div/div[1]/div/div/div[2]/div/div[2]/div/div[3]/div[3]/div/button";
-export const QUESTIONS_SUBMIT_ACCEPTED_XPATH =
-  "/html/body/div[1]/div[2]/div/div/div[4]/div/div/div[4]/div/div[1]/div[1]/div[2]";
-export const QUESTIONS_LANGUAGE_BTN_XPATH =
-  "/html/body/div[1]/div[2]/div/div/div[4]/div/div/div[8]/div/div[1]/div[1]/div[1]/button";
-export const QUESTIONS_LANGUAGE_DIV_XPATH =
-  "/html/body/div[8]/div/div/div/div";
-export const IS_SOLUTION_ACCEPTED_DIV_XPATH= "/html/body/div[1]/div[2]/div/div/div[4]/div/div/div[11]/div/div/div/div[2]/div/div[1]/div[1]/div[1]/span";
-export const IS_QUESTION_PREMIUM = "/html/body/div[1]/div[2]/div/div/div[4]/div[2]/div/div[2]"
+// Questions Solver XPath & Resilient Selectors
+export const QUESTIONS_CODE_DIV_XPATH = [
+  "//div[contains(@class, 'monaco-editor')]//textarea",
+  "//div[contains(@class, 'view-lines')]",
+  "/html/body/div[1]/div[2]/div/div/div[4]/div/div/div[8]/div/div[2]/div[1]/div/div[1]/div[1]/textarea"
+];
+export const QUESTIONS_SUBMIT_DIV_XPATH = [
+  "//button[@data-cy='submit-code-btn']",
+  "//button[@data-e2e-locator='console-submit-button']",
+  "//button[normalize-space(.)='Submit' or contains(., 'Submit')]",
+  "/html/body/div[1]/div[2]/div/div/div[3]/nav/div[2]/div/div[1]/div/div/div[2]/div/div[2]/div/div[3]/div[3]/div/button"
+];
+export const QUESTIONS_SUBMIT_ACCEPTED_XPATH = [
+  "//div[contains(text(), 'Solved')]",
+  "//span[contains(text(), 'Solved')]",
+  "/html/body/div[1]/div[2]/div/div/div[4]/div/div/div[4]/div/div[1]/div[1]/div[2]"
+];
+export const QUESTIONS_LANGUAGE_BTN_XPATH = [
+  "//button[contains(@id, 'headlessui-listbox-button')]",
+  "//button[contains(@class, 'rounded') and (.//text()='C++' or .//text()='Python3' or .//text()='Java' or .//text()='JavaScript' or .//text()='TypeScript' or .//text()='C' or .//text()='Go' or .//text()='Rust')]",
+  "/html/body/div[1]/div[2]/div/div/div[4]/div/div/div[8]/div/div[1]/div[1]/div[1]/button"
+];
+export const QUESTIONS_LANGUAGE_DIV_XPATH = [
+  "//div[@role='option']",
+  "//li[@role='option']",
+  "//div[contains(@id, 'headlessui-listbox-options')]//div",
+  "/html/body/div[8]/div/div/div/div"
+];
+export const IS_SOLUTION_ACCEPTED_DIV_XPATH = [
+  "//span[contains(text(), 'Accepted')]",
+  "//div[contains(@data-e2e-locator, 'submission-result') and contains(., 'Accepted')]",
+  "/html/body/div[1]/div[2]/div/div/div[4]/div/div/div[11]/div/div/div/div[2]/div/div[1]/div[1]/div[1]/span"
+];
+export const IS_QUESTION_PREMIUM = [
+  "//a[contains(text(), 'Subscribe')]",
+  "//button[contains(text(), 'Subscribe')]",
+  "//*[contains(text(), 'Subscribe to unlock')]",
+  "/html/body/div[1]/div[2]/div/div/div[4]/div[2]/div/div[2]"
+];
 
 // Maps LeetCode's language slug (stored in each ./problems/*.json) to the label
 // shown in the editor's dropdown. Add an entry to support a new language.
@@ -61,9 +87,10 @@ export const LEETCODER_ASCII_ART = `
 export const LEETCODER_MODE_QUESTION = `
      Select a mode
      [L] Login to LeetCode (do this first / whenever your session expires).
-     [1] Start Leetcode Bot.
+     [1] Start Leetcode Bot (Solve all queued problems).
      [2] Scrape Solved Leetcode Problems.
      [3] Solve Daily Challenge.
+     [4] Solve Specific Problem(s) (by number, name, range 1-5, or list file).
      [other] Exit.
     `;
 

@@ -1,122 +1,175 @@
-import clipboardy from "clipboardy";
-import {copyHelper, getElementBySelector, getElementByXPath, selectAllHelper, sleep} from "../utils/utils.js";
-import {
-  SCRAPER_SUBMITTED_CODE_DIV_XPATH,
-  SCRAPER_SUBMITTED_CODE_LANGUAGE_XPATH,
-  SCRAPER_SUBMITTED_CODE_NAME_XPATH,
-} from "../utils/constants.js";
 import Logger from "../utils/Logger.js";
 import {getBrowserDetails} from "../managers/BrowserManager.js";
 import FileManager from "../managers/FileManager.js";
+import {sleep} from "../utils/utils.js";
 
-class LeetcoderScraper {
-  static async #scrapeAndSaveCodeFromSubmissionId(id) {
-    const {browser} = await getBrowserDetails();
-    const page = await browser.newPage();
-
-    try {
-      await page.goto(`https://leetcode.com/submissions/detail/${id}/`, {
-        waitUntil: "networkidle2",
-      });
-
-      const statusDiv = await getElementByXPath(page, "//*[@id='result_state']", 3, 0);
-      const textContent = await statusDiv[0].evaluate((el) => el.textContent);
-      if (textContent !== 'Accepted') return;
-
-      // Get name from the link in the name href
-      const nameDiv = await getElementByXPath(page, SCRAPER_SUBMITTED_CODE_NAME_XPATH, 3, 0);
-      const hrefHandle = await nameDiv[0].getProperty("href");
-      const href = await hrefHandle.jsonValue();
-      const arr = await href.split("/");
-      const nameDivValue = arr[arr.length - 2];
-
-      // Get the language from the submission page
-      const languageDiv = await getElementByXPath(page, SCRAPER_SUBMITTED_CODE_LANGUAGE_XPATH, 3, 0);
-      const languageDivValue = await languageDiv[0].evaluate((el) => el.textContent);
-
-      // Get Code from the code  div
-      const codeDiv = await getElementByXPath(page, SCRAPER_SUBMITTED_CODE_DIV_XPATH, 3, 0);
-      await codeDiv[0].click();
-
-      await selectAllHelper(page);
-      await copyHelper(page);
-
-      const copiedText = clipboardy.readSync();
-      let fileContent = {problemName: nameDivValue, language: languageDivValue, code: copiedText};
-      await FileManager.saveScrapedSolution(fileContent);
-    } catch (err) {
-      Logger.error('Something went wrong!', err);
-    } finally {
-      await page.close();
-    }
-  }
-
-  static async #scrapeSubmissionIdsFromPageId(id) {
-    const {page} = await getBrowserDetails();
-    await page.goto(`https://leetcode.com/submissions/#/${id}`, {
-      waitUntil: 'networkidle2',
-    });
-
-    let rows = [];
-    try {
-      rows = await getElementBySelector(page, '.text-success', 10, 0);
-    } catch (_) {
-    }
-
-    return await Promise.all(rows.map(async row => {
-      const href = await row.evaluate(el => el.getAttribute('href'));
-      return href.split('/').slice(-2, -1)[0];
-    }));
-  }
-
-  static async #scrapeCodeFromAllSubmissions(browser) {
-    for (let page_no = 1; page_no <= 1000; page_no++) {
-      try {
-        const submission_ids = await this.#scrapeSubmissionIdsFromPageId(page_no, browser);
-        Logger.success(`Submission ids fetched from page number ${page_no}`, submission_ids);
-
-        const promises = [];
-        for (let idx = 0; idx < submission_ids.length; idx++) {
-          promises.push(this.#scrapeAndSaveCodeFromSubmissionId(submission_ids[idx], browser));
-        }
-        await Promise.all(promises);
-        promises.length = 0;
-      } catch (err) {
-        Logger.error('Something went wrong, Most Likely Invalid page id', err);
-        return;
+const SUBMISSIONS_LIST_QUERY = `
+  query Submissions($offset: Int!, $limit: Int!) {
+    submissionList(offset: $offset, limit: $limit) {
+      hasNext
+      submissions {
+        id
+        title
+        titleSlug
+        statusDisplay
+        lang
       }
     }
+  }
+`;
+
+const SUBMISSION_DETAILS_QUERY = `
+  query submissionDetails($submissionId: Int!) {
+    submissionDetails(submissionId: $submissionId) {
+      code
+      runtime
+      memory
+      statusCode
+      lang {
+        name
+        verboseName
+      }
+      question {
+        title
+        titleSlug
+      }
+    }
+  }
+`;
+
+class LeetcoderScraper {
+  static async #fetchSubmissionDetails(page, submissionId) {
+    return await page.evaluate(async (query, subId) => {
+      try {
+        const response = await fetch('https://leetcode.com/graphql', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query,
+            variables: { submissionId: parseInt(subId, 10) }
+          })
+        });
+        const json = await response.json();
+        return json?.data?.submissionDetails || null;
+      } catch (err) {
+        return null;
+      }
+    }, SUBMISSION_DETAILS_QUERY, submissionId);
+  }
+
+  static async #fetchSubmissionPage(page, offset, limit = 20) {
+    return await page.evaluate(async (query, offsetVal, limitVal) => {
+      try {
+        const response = await fetch('https://leetcode.com/graphql', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query,
+            variables: { offset: offsetVal, limit: limitVal }
+          })
+        });
+        const json = await response.json();
+        return json?.data?.submissionList || { hasNext: false, submissions: [] };
+      } catch (err) {
+        return { hasNext: false, submissions: [] };
+      }
+    }, SUBMISSIONS_LIST_QUERY, offset, limit);
   }
 
   static async scrapeAcceptedSolutions() {
     Logger.error('<<<< Starting Leetcoder Scrapper >>>>');
-    await this.#scrapeCodeFromAllSubmissions();
+    const {page} = await getBrowserDetails();
+    
+    // Ensure we are on an authenticated LeetCode page to access session cookies & GraphQL
+    try {
+      await page.goto('https://leetcode.com/', {
+        waitUntil: 'domcontentloaded',
+        timeout: 60000,
+      });
+    } catch (_) {
+      Logger.warn('Navigation warning: proceeding to query GraphQL API.');
+    }
+
+    const seenProblems = new Set();
+    let offset = 0;
+    const limit = 20;
+    let totalScraped = 0;
+
+    while (true) {
+      Logger.warn(`[FETCHING_SUBMISSIONS]\t: offset ${offset}...`);
+      const listData = await this.#fetchSubmissionPage(page, offset, limit);
+      const submissions = listData.submissions || [];
+
+      if (submissions.length === 0) {
+        Logger.success('No more submissions found.');
+        break;
+      }
+
+      Logger.success(`Fetched ${submissions.length} submissions at offset ${offset}`);
+
+      for (const sub of submissions) {
+        if (sub.statusDisplay !== 'Accepted') {
+          continue;
+        }
+
+        const problemSlug = sub.titleSlug;
+        if (seenProblems.has(problemSlug)) {
+          Logger.warn(`[SKIPPING_DUPLICATE]\t:${problemSlug} (already scraped latest accepted submission)`);
+          continue;
+        }
+
+        Logger.warn(`[SCRAPING_CODE]\t\t:${problemSlug} (ID: ${sub.id})`);
+        const details = await this.#fetchSubmissionDetails(page, sub.id);
+
+        if (details && details.code) {
+          const fileContent = {
+            problemName: details.question?.titleSlug || problemSlug,
+            language: details.lang?.name || sub.lang,
+            code: details.code
+          };
+          await FileManager.saveScrapedSolution(fileContent);
+          seenProblems.add(problemSlug);
+          totalScraped++;
+        } else {
+          Logger.error(`[FAILED_FETCH]\t\t: Could not retrieve code for submission ${sub.id}`);
+        }
+
+        await sleep(0.3); // Respectful rate limiting
+      }
+
+      if (!listData.hasNext) {
+        Logger.success('Reached end of submission history.');
+        break;
+      }
+
+      offset += limit;
+      await sleep(0.5);
+    }
+
+    Logger.success(`[SCRAPING_COMPLETE]\t: Successfully processed ${totalScraped} accepted problem solutions.`);
     Logger.error('<<<< Exiting Leetcoder Scrapper >>>>');
   }
 
   /**
-   * This is only for testing and scraping global solutions not relevant to the users.
+   * Scrape solutions globally (legacy testing helper)
    */
   static async scrapeAcceptedSolutionsGlobally() {
-    Logger.error('<<<< Starting Leetcoder Scrapper >>>>');
-    const {browser} = getBrowserDetails();
-    try {
-      let id_no = 1010011580
-      while (id_no > 0) {
-        const promises = [];
-        for (let idx = 0; idx < 30; idx++) {
-          promises.push(this.#scrapeAndSaveCodeFromSubmissionId(id_no, browser));
-          id_no++;
-        }
-        await Promise.all(promises);
-        await sleep(3)
-        Logger.warn('LAST FETCHED IS ', id_no);
-        promises.length = 0;
+    Logger.error('<<<< Starting Leetcoder Global Scrapper >>>>');
+    const {page} = await getBrowserDetails();
+    let id_no = 1010011580;
+    while (id_no > 0) {
+      const details = await this.#fetchSubmissionDetails(page, id_no);
+      if (details && details.code && details.question?.titleSlug) {
+        await FileManager.saveScrapedSolution({
+          problemName: details.question.titleSlug,
+          language: details.lang?.name || 'unknown',
+          code: details.code
+        });
       }
-    } catch (e) {
-      Logger.error(e);
+      id_no++;
+      await sleep(1);
     }
-    Logger.error('<<<< Exiting Leetcoder Scrapper >>>>');
+    Logger.error('<<<< Exiting Leetcoder Global Scrapper >>>>');
   }
 }
 

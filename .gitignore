@@ -1,9 +1,13 @@
 # Dependency directories
 node_modules/
+client/node_modules/
+client/dist/
 
-# Chrome profiles
-UserData
-
+# Chrome profiles & local user data
+UserData/
 .env
 
-.idea
+# Editor & OS files
+.idea/
+.vscode/
+*.log

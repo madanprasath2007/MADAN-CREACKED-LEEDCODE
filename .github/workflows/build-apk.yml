@@ -1,0 +1,68 @@
+name: Build Free Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Client & Build PWA
+        run: |
+          cd client
+          npm install
+          npm run build
+
+      - name: Install Bubblewrap CLI
+        run: npm install -g @bubblewrap/cli
+
+      - name: Initialize & Build Android Project
+        run: |
+          mkdir -p android-build
+          cd android-build
+          
+          # Initialize Android TWA manifest
+          bubblewrap init --manifest="https://leetcoder-demo.web.app/manifest.json" --skipPwaValidation || true
+          
+          # Generate signing key & keystore
+          keytool -genkeypair -dname "cn=Leetcoder, ou=Dev, o=LeetCode, c=US" \
+            -alias leetcoder \
+            -keypass password123 \
+            -keystore android.keystore \
+            -storepass password123 \
+            -validity 10000 \
+            -keyalg RSA \
+            -keysize 2048
+
+          # Build APK
+          bubblewrap build --manifest=twa-manifest.json || true
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Leetcoder-Release-APK
+          path: |
+            android-build/*.apk
+            android-build/*.aab
+            android-build/app/build/outputs/apk/
+

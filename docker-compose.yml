@@ -1,0 +1,19 @@
+services:
+  leetcoder:
+    build: .
+    container_name: leetcoder-app
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - USER_EMAIL=my_leetcode_profile
+      - PREFERRED_LANGUAGE=java
+      - HEADLESS=false
+      - SERVER_PORT=3001
+    volumes:
+      # Persists Chrome login cookies and scraped solutions between restarts
+      - leetcoder-data:/app/UserData
+
+volumes:
+  leetcoder-data:
+
