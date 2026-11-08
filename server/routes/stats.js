@@ -6,18 +6,6 @@ import dotenv from 'dotenv';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
 
-function getEnv() {
-  const raw = {};
-  try {
-    const buf = require('fs').readFileSync(path.join(ROOT, '.env'), 'utf-8');
-    dotenv.parse(buf);
-  } catch (_) {}
-  dotenv.config({ path: path.join(ROOT, '.env') });
-  return {
-    USER_EMAIL: process.env.USER_EMAIL || 'my_leetcode_profile',
-  };
-}
-
 export async function getStats(req, res) {
   try {
     dotenv.config({ path: path.join(ROOT, '.env'), override: true });

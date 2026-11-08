@@ -1,0 +1,17 @@
+{
+  "description": "Daily automated solver: morning 6:30 AM Daily Challenge + 8 New Unsolved Problems",
+  "enabled": true,
+  "runAtStartup": true,
+  "dailyScheduledTime": "06:30",
+  "instructions": [
+    {
+      "type": "daily_challenge",
+      "description": "Solve LeetCode Daily Challenge"
+    },
+    {
+      "type": "new_unsolved_batch",
+      "description": "Daily solve 8 new unsolved problems",
+      "count": 8
+    }
+  ]
+}

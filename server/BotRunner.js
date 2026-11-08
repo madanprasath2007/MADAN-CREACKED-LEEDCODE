@@ -82,7 +82,7 @@ class BotRunner extends EventEmitter {
     }
     try {
       if (process.platform === 'win32') {
-        spawn('taskkill', ['/pid', String(this.process.pid), '/f', '/t'], { shell: true });
+        spawn('taskkill', ['/pid', String(this.process.pid), '/f', '/t']);
       } else {
         // Linux / Unix process group termination
         try {

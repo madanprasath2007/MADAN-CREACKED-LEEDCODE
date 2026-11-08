@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 
 const MODES = [
-  { id: 'L', label: 'Login to LeetCode', desc: 'Opens Chrome for manual session auth' },
-  { id: '1', label: 'Solve All Queued', desc: 'Solves all problems in local ./problems/' },
-  { id: '2', label: 'Scrape Solved Solutions', desc: 'Fetches accepted submissions via GraphQL' },
+  { id: '5', label: 'Daily Automated Batch', desc: 'Solves Daily Challenge + 8 Java problems with email report' },
   { id: '3', label: 'Solve Daily Challenge', desc: 'Solves today\'s active coding challenge' },
   { id: '4', label: 'Solve Specific Problems', desc: 'Custom problem number, slug, range, or file' },
+  { id: '1', label: 'Solve All Queued', desc: 'Solves all problems in local ./problems/' },
+  { id: '2', label: 'Scrape Solved Solutions', desc: 'Fetches accepted submissions via GraphQL' },
+  { id: 'L', label: 'Login to LeetCode', desc: 'Opens Chrome for manual session auth' },
 ];
 
 export default function ControlPanel({ botStatus, onStart, onStop }) {
-  const [selectedMode, setSelectedMode] = useState('1');
+  const [selectedMode, setSelectedMode] = useState('5');
   const [customInput, setCustomInput] = useState('');
 
   const isRunning = botStatus.running;

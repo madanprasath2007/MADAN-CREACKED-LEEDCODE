@@ -24,7 +24,11 @@
 
 ## 🔥 What's New in this Version
 
-- 🖥️ **Full Web Dashboard (React + Express)**: Control the bot, view real-time WebSocket console logs, search solutions, and configure `.env` directly from your browser.
+- 🖥️ **Full Web Dashboard (React + Express)**: Control the bot, view real-time WebSocket console logs, search solutions, and configure settings directly from your browser.
+- ⚡ **Supabase PostgreSQL Database**: Cloud user account management with dual-layer persistent storage and ready-to-run SQL schema.
+- 🔐 **Sign in with Google (OAuth 2.0)**: 1-click Google authentication with official Google Identity Services integration.
+- 📶 **Wi-Fi & Mobile Network Ready**: Accessible over local Wi-Fi with an automatic terminal QR code for phone access.
+- 🤖 **Automated Daily Scheduler**: Hands-free daily runner for morning Daily Challenge and batches of new unsolved problems with Gmail SMTP email reports.
 - 🚀 **Java Online Solution Fetcher**: Automatically downloads verified solutions from open-source repositories when missing locally.
 - 🎯 **Mode 4 (Custom Problem Targets)**: Run specific numbers (`1`), slugs (`two-sum`), ranges (`1-50`), or text files.
 - 📅 **Mode 3 (Daily Challenge)**: Automatically queries LeetCode's GraphQL API for today's active question.
@@ -128,15 +132,19 @@ You can run this application on your Android phone as a native app:
 ```
 MADAN-CREACKED-LEEDCODE/
 ├── server/                  # Express + WebSocket HTTP backend
-│   ├── server.js            # App server & WS broadcast
+│   ├── server.js            # App server, network listener & WS broadcast
+│   ├── auth.js              # PBKDF2 hashing, JWT & Google OAuth verification
 │   ├── BotRunner.js         # Process manager & log streamer
-│   └── routes/              # Stats, solutions, and settings APIs
+│   ├── database/            # Supabase PostgreSQL client & SQL schema
+│   └── routes/              # Auth, stats, solutions, and settings APIs
 ├── client/                  # React 18 + Vite frontend
-│   ├── src/                 # Dashboard components (LeetCode dark theme)
+│   ├── src/                 # Dashboard, Login, and Settings components
 │   └── public/              # PWA manifest, service worker & icons
 ├── leetcoder/               # Core bot engines (Solver, Scraper, Authenticator)
 ├── managers/                # BrowserManager (Puppeteer) & FileManager
 ├── problems/                # 2,500+ local problem archives
+├── instructions.json        # Predefined scheduled automation rules
+├── runInstructions.js       # Hands-free batch instruction runner
 ├── Dockerfile               # Production Docker container with Chrome & XVFB
 └── .github/workflows/       # Automated APK compilation workflow
 ```

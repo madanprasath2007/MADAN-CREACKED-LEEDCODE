@@ -73,25 +73,24 @@ export const LANGUAGE_DISPLAY_MAP = {
 };
 
 export const LEETCODER_ASCII_ART = `
-     _                    _                _           
-    | |                  | |              | |          
-    | |     ___  ___  ___| |_ ___ ___   __| | ___ _ __ 
-    | |    / _ \\/ _ \\/ _ \\ __/ __/ _ \\ / _| |/ _ \\  __|
-    | |___|  __/  __/  __/ || (_| (_) | (_| |  __/ |   
-    \\_____/\\___|\\___|\\___|\\__\\___\\___/ \\__,_|\\___|_|
+    __  ___ ___     ____   ___    _   __   ______ ____   ___    ______ __ __ ______ ____ 
+   /  |/  //   |   / __ \ /   |  / | / /  / ____// __ \ /   |  / ____// //_// ____// __ \
+  / /|_/ // /| |  / / / // /| | /  |/ /  / /    / /_/ // /| | / /    / ,<  / __/  / / / /
+ / /  / // ___ | / /_/ // ___ |/ /|  /  / /___ / _, _// ___ |/ /___ / /| |/ /___ / /_/ / 
+/_/  /_//_/  |_|/_____//_/  |_/_/ |_/   \____//_/ |_|/_/  |_|\____//_/ |_/_____//_____/  
     
-    Developed by : Chanpreet Singh
-    Github Link : https://github.com/chanpreet3000/Leetcoder
+    Developed by : Madan Prasath
+    Github Link  : https://github.com/madanprasath2007/MADAN-CREACKED-LEEDCODE
     `;
 
 export const LEETCODER_MODE_QUESTION = `
      Select a mode
      [L] Login to LeetCode (do this first / whenever your session expires).
-     [1] Start Leetcode Bot (Solve all queued problems).
-     [2] Scrape Solved Leetcode Problems.
+     [1] Start Solver (Solve all queued problems).
+     [2] Scrape Solved Problems.
      [3] Solve Daily Challenge.
      [4] Solve Specific Problem(s) (by number, name, range 1-5, or list file).
      [other] Exit.
     `;
 
-export const EXITING_LEETCODER = `Thanks for using Leetcoder. Please report any bugs/issues Github Link : https://github.com/chanpreet3000/Leetcoder`;
+export const EXITING_LEETCODER = `Thanks for using Madan Cracked LeetCode. GitHub: https://github.com/madanprasath2007/MADAN-CREACKED-LEEDCODE`;

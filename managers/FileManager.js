@@ -19,40 +19,22 @@ class FileManager {
   }
 
   static async getProblemDetails(problemName, preferredLang = PREFERRED_LANGUAGE) {
-    // 1. If preferred language is Java, prioritize Java solutions
-    if (preferredLang === 'java') {
-      // Check cached Java solutions
+    const isJavaPreferred = String(preferredLang).toLowerCase() === 'java';
+
+    // 1. If preferred language is Java, prioritize online verified/cached Java solutions
+    if (isJavaPreferred) {
+      // Check cached Java solutions (verified online repository)
       try {
         const cachedPath = path.join(JAVA_SOLUTIONS_PATH, `${problemName}.json`);
         const file = await fs.readFile(cachedPath, 'utf-8');
         const data = JSON.parse(file);
-        Logger.warn(`[LOADED_JAVA_CACHED]\t:`, {language: 'java', problem: problemName});
-        return {language: 'java', code: data.code};
-      } catch (_) {}
-
-      // Check ScrapedSolutions if already in Java
-      try {
-        const scrapedPath = path.join(LEETCODER_SCRAPED_SOLUTIONS_PATH, `${problemName}.json`);
-        const file = await fs.readFile(scrapedPath, 'utf-8');
-        const data = JSON.parse(file);
-        if (data.language && data.language.toLowerCase() === 'java') {
-          Logger.warn(`[LOADED_JAVA_SCRAPED]\t:`, {language: 'java', problem: problemName});
+        if (data && data.code && (!data.language || data.language.toLowerCase() === 'java')) {
+          Logger.warn(`[LOADED_JAVA_CACHED]\t:`, {language: 'java', problem: problemName});
           return {language: 'java', code: data.code};
         }
       } catch (_) {}
 
-      // Check ./problems/ if already in Java
-      try {
-        const probPath = `./problems/${problemName}.json`;
-        const file = await fs.readFile(probPath, 'utf-8');
-        const data = JSON.parse(file);
-        if (data.language && data.language.toLowerCase() === 'java') {
-          Logger.warn(`[LOADED_JAVA_LOCAL]\t:`, {language: 'java', problem: problemName});
-          return {language: 'java', code: data.code};
-        }
-      } catch (_) {}
-
-      // Fetch verified Java solution online and cache it
+      // Fetch verified Java solution online from high-efficiency repository and cache it
       try {
         Logger.warn(`[FETCHING_JAVA_SOLUTION]: ${problemName}...`);
         const javaSolution = await fetchJavaSolution(problemName);
@@ -68,9 +50,35 @@ class FileManager {
       } catch (err) {
         Logger.warn(`[FETCH_JAVA_FAILED]: Could not fetch Java solution online for ${problemName}`);
       }
+
+      // Check ScrapedSolutions if already in Java
+      try {
+        const scrapedPath = path.join(LEETCODER_SCRAPED_SOLUTIONS_PATH, `${problemName}.json`);
+        const file = await fs.readFile(scrapedPath, 'utf-8');
+        const data = JSON.parse(file);
+        if (data && data.code && data.language && data.language.toLowerCase() === 'java') {
+          Logger.warn(`[LOADED_JAVA_SCRAPED]\t:`, {language: 'java', problem: problemName});
+          return {language: 'java', code: data.code};
+        }
+      } catch (_) {}
+
+      // Check ./problems/ fallback if already in Java
+      try {
+        const probPath = `./problems/${problemName}.json`;
+        const file = await fs.readFile(probPath, 'utf-8');
+        const data = JSON.parse(file);
+        if (data && data.code && data.language && data.language.toLowerCase() === 'java') {
+          Logger.warn(`[LOADED_JAVA_LOCAL]\t:`, {language: 'java', problem: problemName});
+          return {language: 'java', code: data.code};
+        }
+      } catch (_) {}
+
+      // Strict Java mode: if no Java solution found anywhere, skip non-Java questions completely
+      Logger.warn(`[NON_JAVA_QUESTION]\t: No Java solution available for "${problemName}". Non-Java questions are skipped.`);
+      return null;
     }
 
-    // 2. Fallback to standard problem files
+    // 2. Fallback to standard problem files for non-Java configurations
     let file = null;
     try {
       file = await fs.readFile(`./problems/${problemName}.json`, 'utf-8');

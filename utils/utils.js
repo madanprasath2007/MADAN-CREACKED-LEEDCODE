@@ -48,6 +48,7 @@ export const getElementByXPath = async (element, xpath, timeoutDelay = 30, delay
 export const getElementBySelector = async (element, selector, timeoutDelay = 30, delay = 1.3) => {
   await sleep(delay);
   const selectors = Array.isArray(selector) ? selector : [selector];
+  // Give each candidate an equal slice of the total timeout, minimum 3 s.
   const perTimeout = Math.max(3000, Math.floor((timeoutDelay * 1000) / selectors.length));
 
   for (const sel of selectors) {
@@ -63,11 +64,23 @@ export const getElementBySelector = async (element, selector, timeoutDelay = 30,
     }
   }
 
-  await element.waitForSelector(selectors[0], {
-    visible: true,
-    timeout: timeoutDelay * 1000,
-  });
-  return await element.$$(selectors[0]);
+  // All candidates failed – do one final attempt with a generous timeout on
+  // every selector before giving up, so we surface a useful error.
+  for (const sel of selectors) {
+    try {
+      await element.waitForSelector(sel, {
+        visible: true,
+        timeout: Math.max(5000, timeoutDelay * 500),
+      });
+      const res = await element.$$(sel);
+      if (res && res.length > 0) return res;
+    } catch (_) {}
+  }
+
+  // Nothing matched – throw with the full selector list for easy debugging.
+  throw new Error(
+    `None of the selectors matched within ${timeoutDelay}s: ${selectors.join(', ')}`
+  );
 };
 
 let cntrlKey = process.platform === "win32" ? "Control" : "Meta";

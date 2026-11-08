@@ -18,3 +18,4 @@ sleep 2
 # Start the Node.js application server
 echo "Starting Leetcoder App Server..."
 exec npm run app
+
