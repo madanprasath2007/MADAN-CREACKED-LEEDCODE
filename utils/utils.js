@@ -91,12 +91,6 @@ export const selectAllHelper = async (page) => {
   await page.keyboard.up(cntrlKey);
 };
 
-export const copyHelper = async (page) => {
-  await page.keyboard.down(cntrlKey);
-  await page.keyboard.press("KeyC");
-  await page.keyboard.up(cntrlKey);
-};
-
 export const pasteHelper = async (page) => {
   await page.keyboard.down(cntrlKey);
   await page.keyboard.press("KeyV");

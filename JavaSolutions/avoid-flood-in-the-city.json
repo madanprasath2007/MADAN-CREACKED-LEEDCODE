@@ -1,5 +1,0 @@
-{
-  "problemName": "avoid-flood-in-the-city",
-  "language": "java",
-  "code": "class Solution {\n    public int[] avoidFlood(int[] rains) {\n        int n = rains.length;\n        int[] ans = new int[n];\n        Arrays.fill(ans, -1);\n        TreeSet<Integer> sunny = new TreeSet<>();\n        Map<Integer, Integer> rainy = new HashMap<>();\n        for (int i = 0; i < n; ++i) {\n            int v = rains[i];\n            if (v > 0) {\n                if (rainy.containsKey(v)) {\n                    Integer t = sunny.higher(rainy.get(v));\n                    if (t == null) {\n                        return new int[0];\n                    }\n                    ans[t] = v;\n                    sunny.remove(t);\n                }\n                rainy.put(v, i);\n            } else {\n                sunny.add(i);\n                ans[i] = 1;\n            }\n        }\n        return ans;\n    }\n}"
-}

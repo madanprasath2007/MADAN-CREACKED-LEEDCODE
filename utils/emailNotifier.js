@@ -102,15 +102,47 @@ export async function sendEmailNotification(details) {
   const maxAttempts = 3;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      const transporter = nodemailer.createTransport({
-        host: SMTP_HOST,
-        port: parseInt(SMTP_PORT, 10),
-        secure: parseInt(SMTP_PORT, 10) === 465, // true for 465, false for 587
-        auth: {
-          user: SMTP_USER,
-          pass: SMTP_PASS,
-        },
-      });
+      const isGmail = SMTP_HOST.toLowerCase().includes('gmail');
+      let transporterConfig;
+
+      if (isGmail) {
+        // Attempt 1 uses direct Gmail transport; retries fall back to port 587 (STARTTLS)
+        if (attempt === 1) {
+          transporterConfig = {
+            service: 'gmail',
+            auth: { user: SMTP_USER, pass: SMTP_PASS },
+            connectionTimeout: 15000,
+            greetingTimeout: 15000,
+            socketTimeout: 20000,
+          };
+        } else {
+          transporterConfig = {
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false,
+            auth: { user: SMTP_USER, pass: SMTP_PASS },
+            connectionTimeout: 15000,
+            greetingTimeout: 15000,
+            socketTimeout: 20000,
+          };
+        }
+      } else {
+        const isPort465 = parseInt(SMTP_PORT, 10) === 465;
+        transporterConfig = {
+          host: SMTP_HOST,
+          port: parseInt(SMTP_PORT, 10),
+          secure: isPort465,
+          auth: {
+            user: SMTP_USER,
+            pass: SMTP_PASS,
+          },
+          connectionTimeout: 15000,
+          greetingTimeout: 15000,
+          socketTimeout: 20000,
+        };
+      }
+
+      const transporter = nodemailer.createTransport(transporterConfig);
 
       await transporter.sendMail({
         from: `"LeetCoder Bot" <${SMTP_USER}>`,

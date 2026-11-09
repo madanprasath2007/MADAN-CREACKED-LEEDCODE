@@ -7,24 +7,53 @@ class BrowserManager {
   static browser = null;
   static page = null;
 
+  static cleanProfileLocks(profilePath) {
+    const lockFiles = [
+      'lockfile',
+      'SingletonLock',
+      'SingletonCookie',
+      'SingletonSocket',
+      'DevToolsActivePort'
+    ];
+    for (const file of lockFiles) {
+      const p = path.join(profilePath, file);
+      try {
+        if (fs.existsSync(p)) {
+          fs.unlinkSync(p);
+        }
+      } catch (_) {}
+    }
+  }
+
+  static async killLingeringChrome(profilePath) {
+    if (process.platform === 'win32') {
+      try {
+        const { execSync } = await import('child_process');
+        const escaped = profilePath.replace(/\\/g, '\\\\').replace(/'/g, "''");
+        execSync(
+          `powershell -Command "Get-CimInstance Win32_Process -Filter \\"Name = 'chrome.exe'\\" | Where-Object { \\$_.CommandLine -like '*${escaped}*' } | Stop-Process -Force -ErrorAction SilentlyContinue"`,
+          { stdio: 'ignore' }
+        );
+      } catch (_) {}
+    }
+  }
+
   static async init() {
     if (!BrowserManager.browser) {
       const resolvedProfilePath = path.resolve(CHROME_PROFILE_PATH);
+      if (!fs.existsSync(resolvedProfilePath)) {
+        fs.mkdirSync(resolvedProfilePath, { recursive: true });
+      }
 
-      // Clean up orphaned lockfile if previous process crashed
-      const lockfilePath = path.join(resolvedProfilePath, 'lockfile');
-      try {
-        if (fs.existsSync(lockfilePath)) {
-          fs.unlinkSync(lockfilePath);
-        }
-      } catch (_) {}
+      // Always clear stale lock files before launching
+      BrowserManager.cleanProfileLocks(resolvedProfilePath);
 
       // On Linux/Render, use headless: 'new' unless DISPLAY is active or HEADLESS is explicitly false
       const isLinux = process.platform === 'linux';
       const hasDisplay = Boolean(process.env.DISPLAY);
       const isHeadless = process.env.HEADLESS === 'true' || (isLinux && !hasDisplay);
 
-      BrowserManager.browser = await puppeteer.launch({
+      const launchOptions = {
         headless: isHeadless ? 'new' : false,
         executablePath: GOOGLE_CHROME_EXECUTABLE_PATH,
         userDataDir: resolvedProfilePath,
@@ -49,7 +78,22 @@ class BrowserManager {
           "--disable-notifications"
         ],
         ignoreDefaultArgs: ["--enable-automation"]
-      });
+      };
+
+      let launchAttempts = 0;
+      while (launchAttempts < 2) {
+        try {
+          BrowserManager.browser = await puppeteer.launch(launchOptions);
+          break;
+        } catch (err) {
+          launchAttempts++;
+          if (launchAttempts >= 2) throw err;
+          // Clear profile locks and terminate lingering bot chrome instances
+          await BrowserManager.killLingeringChrome(resolvedProfilePath);
+          BrowserManager.cleanProfileLocks(resolvedProfilePath);
+          await new Promise((r) => setTimeout(r, 1500));
+        }
+      }
 
       [BrowserManager.page] = await BrowserManager.browser.pages();
       
